@@ -9,9 +9,10 @@ class Settings(BaseSettings):
     QDRANT_HOST: str = "localhost"
     QDRANT_PORT: int = 6333
     
-    # API Keys (To be filled later)
+    # API Keys
     BINANCE_API_KEY: str = ""
     BINANCE_SECRET: str = ""
+    TELEGRAM_BOT_TOKEN: str = "8541846195:AAFP4ygYvR1vySGoJM8bHIxnT8oJtYRG8jU"
     
     # Consensus Settings
     CONSENSUS_THRESHOLD: float = 0.85

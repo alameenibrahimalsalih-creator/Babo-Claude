@@ -18,3 +18,4 @@ nats-py
 loguru
 openai-whisper
 pydantic
+python-telegram-bot

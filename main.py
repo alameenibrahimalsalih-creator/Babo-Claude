@@ -1,42 +1,37 @@
 import asyncio
+import sys
 from app.core.orchestrator import SwarmOrchestrator
 from app.core.consensus import ConsensusEngine
 from app.agents.news_agent import NewsAgent
 from app.agents.sentiment_agent import SentimentAgent
 from app.agents.quant_agent import QuantAgent
+from app.ui.telegram_bot import BaboTelegramBot
 
-async def main():
-    print("--- Starting Babo Claude Advanced Swarm ---")
-    
+async def run_cli(orchestrator, consensus_engine):
+    symbol = "BTC/USDT"
+    print(f"--- CLI Mode: Analyzing {symbol} ---")
+    results = await orchestrator.analyze(symbol)
+    for res in results:
+        print(f"  > {res['agent']}: {res['action']} ({res['confidence']:.2f})")
+    decision = consensus_engine.evaluate(results)
+    print(f"Final Decision: {decision}")
+
+def main():
     orchestrator = SwarmOrchestrator()
     consensus_engine = ConsensusEngine()
 
-    # Registering the Swarm of Agents
-    print("Registering agents...")
+    # Register Agents
     orchestrator.register(NewsAgent())
     orchestrator.register(SentimentAgent())
     orchestrator.register(QuantAgent())
 
-    # Run Multi-Agent Analysis
-    symbol = "BTC/USDT"
-    print(f"Swarm is analyzing {symbol}...")
-    results = await orchestrator.analyze(symbol)
-
-    # Display individual agent findings
-    for res in results:
-        print(f"  > {res['agent']}: Action={res['action']}, Confidence={res['confidence']:.2f}, Reason={res['reason']}")
-
-    # Evaluate Global Consensus
-    decision = consensus_engine.evaluate(results, threshold=0.85)
-    
-    print("\n--- Final Decision ---")
-    print(f"Consensus Score: {decision['score']:.4f}")
-    if decision["approved"]:
-        print("Status: APPROVED - The swarm has reached a consensus to execute the trade.")
-        print("Action: Executing BUY order via Broker API...")
+    if len(sys.argv) > 1 and sys.argv[1] == "--telegram":
+        # Run in Telegram Mode
+        bot = BaboTelegramBot(orchestrator, consensus_engine)
+        bot.run()
     else:
-        print("Status: REJECTED - The swarm could not reach the required 85% consensus.")
-        print("Action: Monitoring markets for better entry points.")
+        # Run in CLI Mode (Default)
+        asyncio.run(run_cli(orchestrator, consensus_engine))
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
