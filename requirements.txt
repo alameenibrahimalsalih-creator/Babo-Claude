@@ -19,3 +19,4 @@ loguru
 openai-whisper
 pydantic
 python-telegram-bot
+pydantic-settings
