@@ -20,3 +20,6 @@ openai-whisper
 pydantic
 python-telegram-bot
 pydantic-settings
+requests
+scikit-learn
+ta-lib
